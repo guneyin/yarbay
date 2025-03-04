@@ -29,7 +29,12 @@ func newFiberApp(appName string, config Config) *fiber.App {
 
 	app.Use(cors.New())
 	app.Use(recover.New())
-	app.Use(otelfiber.Middleware())
+	app.Use(otelfiber.Middleware(
+		otelfiber.WithServerName(appName),
+		otelfiber.WithSpanNameFormatter(func(c *fiber.Ctx) string {
+			return c.Route().Name + ": " + c.Method() + " " + c.Path()
+		}),
+	))
 
 	if config.Swagger {
 		swaggerConfig := swagger.Config{
