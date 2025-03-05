@@ -8,9 +8,13 @@ import (
 	"go.opentelemetry.io/otel/sdk/resource"
 	"go.opentelemetry.io/otel/sdk/trace"
 	semconv "go.opentelemetry.io/otel/semconv/v1.17.0"
+	"time"
 )
 
-func newTraceProvider(ctx context.Context, url, serviceName string) (*trace.TracerProvider, error) {
+func newTraceProvider(url, serviceName string) (*trace.TracerProvider, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
+	defer cancel()
+
 	exporter, err := otlptracehttp.New(ctx, otlptracehttp.WithEndpoint(url), otlptracehttp.WithInsecure())
 	if err != nil {
 		return nil, err

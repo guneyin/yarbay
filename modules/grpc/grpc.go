@@ -14,7 +14,7 @@ type ServiceRegistry struct {
 	Service any
 }
 
-func newGRPCServer(config Config) *grpc.Server {
+func newGRPCServer(config *Config) *grpc.Server {
 	timeout := defaultTimeout
 	if config.Timeout > 0 {
 		timeout = config.Timeout

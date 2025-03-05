@@ -1,7 +1,6 @@
 package db
 
 import (
-	"context"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
 )
@@ -13,30 +12,30 @@ type DB struct {
 	dialect gorm.Dialector
 }
 
-func (s *DB) Name() string {
+func (d *DB) Name() string {
 	return ModuleName
 }
 
-func (s *DB) Start(ctx context.Context) error {
-	if s == nil {
+func (d *DB) Start() error {
+	if d == nil {
 		return nil
 	}
 
-	db, err := gorm.Open(s.dialect, &gorm.Config{Logger: logger.Default.LogMode(logger.Error)})
+	db, err := gorm.Open(d.dialect, &gorm.Config{Logger: logger.Default.LogMode(logger.Error)})
 	if err != nil {
 		return err
 	}
 
-	s.DB = db.WithContext(ctx)
+	d.DB = db
 	return err
 }
 
-func (s *DB) Stop() error {
-	if s == nil {
+func (d *DB) Stop() error {
+	if d == nil {
 		return nil
 	}
 
-	sdb, err := s.DB.DB()
+	sdb, err := d.DB.DB()
 	if err != nil {
 		return err
 	}

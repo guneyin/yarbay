@@ -7,7 +7,7 @@ import (
 
 type Module interface {
 	Name() string
-	Start(ctx context.Context) error
+	Start() error
 	Stop() error
 }
 
@@ -26,7 +26,7 @@ func (mc *Controller) Boostrap(ctx context.Context) error {
 	for _, mod := range mc.modules {
 		go func() {
 			logger.Info("[INFO] starting %s module\n", mod.Name())
-			if err := mod.Start(ctx); err != nil {
+			if err := mod.Start(); err != nil {
 				errCh <- err
 			}
 		}()

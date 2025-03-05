@@ -1,4 +1,4 @@
-package http
+package fiber
 
 import (
 	"fmt"
@@ -7,21 +7,22 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/gofiber/fiber/v2/middleware/recover"
+	"os"
 	"time"
 )
 
 const defaultTimeout = 30 * time.Second
 
-func newFiberApp(appName string, config Config) *fiber.App {
+func newFiberApp(config *Config) *fiber.App {
 	timeout := defaultTimeout
 	if config.Timeout > 0 {
 		timeout = config.Timeout
 	}
 
 	app := fiber.New(fiber.Config{
-		ServerHeader:          fmt.Sprintf("%s %s", appName, ModuleName),
+		ServerHeader:          fmt.Sprintf("%s %s", config.AppName, ModuleName),
 		BodyLimit:             16 * 1024 * 1024,
-		AppName:               appName,
+		AppName:               config.AppName,
 		ReadTimeout:           timeout,
 		WriteTimeout:          timeout,
 		DisableStartupMessage: true,
@@ -30,7 +31,7 @@ func newFiberApp(appName string, config Config) *fiber.App {
 	app.Use(cors.New())
 	app.Use(recover.New())
 	app.Use(otelfiber.Middleware(
-		otelfiber.WithServerName(appName),
+		otelfiber.WithServerName(config.AppName),
 		otelfiber.WithSpanNameFormatter(func(c *fiber.Ctx) string {
 			return c.Route().Name + ": " + c.Method() + " " + c.Path()
 		}),
@@ -43,10 +44,14 @@ func newFiberApp(appName string, config Config) *fiber.App {
 			FilePath:    "./docs/swagger.json",
 			FileContent: nil,
 			Path:        "docs",
-			Title:       fmt.Sprintf("%s API documentation", appName),
+			Title:       fmt.Sprintf("%s API documentation", config.AppName),
 			CacheAge:    0,
 		}
-		app.Use(swagger.New(swaggerConfig))
+
+		_, err := os.Stat(swaggerConfig.FilePath)
+		if err == nil {
+			app.Use(swagger.New(swaggerConfig))
+		}
 	}
 
 	return app

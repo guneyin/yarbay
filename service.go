@@ -6,11 +6,11 @@ import (
 )
 
 type Service interface {
-	Register(m modules.Market)
+	Boostrap(m modules.Market)
 }
 
 func (a *App) RegisterService(s Service) {
-	s.Register(a.Market())
+	s.Boostrap(a.Market())
 }
 
 func (a *App) RegisterRPCService(desc grpc.ServiceDesc, service any) {

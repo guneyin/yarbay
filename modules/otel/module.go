@@ -3,32 +3,30 @@ package otel
 import (
 	"context"
 	"go.opentelemetry.io/otel/sdk/trace"
+	"time"
 )
 
 const ModuleName = "open-telemetry"
 
 type Otel struct {
 	*trace.TracerProvider
-	ctx         context.Context
-	appName     string
-	exporterURL string
+	config *Config
 }
 
-func New(appName, exporterURL string) *Otel {
-	return &Otel{appName: appName, exporterURL: exporterURL}
+func New(config *Config) *Otel {
+	return &Otel{config: config}
 }
 
 func (o *Otel) Name() string {
 	return ModuleName
 }
 
-func (o *Otel) Start(ctx context.Context) error {
+func (o *Otel) Start() error {
 	if o == nil {
 		return nil
 	}
 
-	o.ctx = ctx
-	tp, err := newTraceProvider(ctx, o.exporterURL, o.appName)
+	tp, err := newTraceProvider(o.config.ExportURL, o.config.AppName)
 	if err != nil {
 		return err
 	}
@@ -46,5 +44,8 @@ func (o *Otel) Stop() error {
 		return nil
 	}
 
-	return o.TracerProvider.Shutdown(o.ctx)
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*10)
+	defer cancel()
+
+	return o.TracerProvider.Shutdown(ctx)
 }

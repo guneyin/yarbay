@@ -1,7 +1,6 @@
 package elastic
 
 import (
-	"context"
 	"github.com/elastic/go-elasticsearch/v8"
 )
 
@@ -20,7 +19,7 @@ func (e *Elastic) Name() string {
 	return ModuleName
 }
 
-func (e *Elastic) Start(_ context.Context) error {
+func (e *Elastic) Start() error {
 	if e == nil {
 		return nil
 	}

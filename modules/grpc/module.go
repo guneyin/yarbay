@@ -1,42 +1,43 @@
 package grpc
 
 import (
-	"context"
 	"google.golang.org/grpc"
 	"net"
 )
 
-const (
-	ModuleName = "rpc"
-)
+const ModuleName = "rpc"
 
-type RPC struct {
+type GRPC struct {
 	*grpc.Server
-	config Config
+	port string
 }
 
-func New(config Config) *RPC {
-	return &RPC{newGRPCServer(config), config}
+func New(config *Config) *GRPC {
+	return &GRPC{Server: newGRPCServer(config), port: config.Port}
 }
 
-func (s *RPC) Name() string {
+func (g *GRPC) Name() string {
 	return ModuleName
 }
 
-func (s *RPC) Start(_ context.Context) error {
-	if s == nil {
+func (g *GRPC) Start() error {
+	if g == nil {
 		return nil
 	}
 
-	lis, err := net.Listen("tcp", ":"+s.config.Port)
+	lis, err := net.Listen("tcp", ":"+g.port)
 	if err != nil {
 		return err
 	}
 
-	return s.Serve(lis)
+	return g.Serve(lis)
 }
 
-func (s *RPC) Stop() error {
-	s.Server.GracefulStop()
+func (g *GRPC) Stop() error {
+	if g == nil {
+		return nil
+	}
+
+	g.Server.GracefulStop()
 	return nil
 }

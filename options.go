@@ -3,15 +3,15 @@ package yarbay
 import (
 	"github.com/guneyin/yarbay/modules/db"
 	"github.com/guneyin/yarbay/modules/elastic"
+	"github.com/guneyin/yarbay/modules/fiber"
 	"github.com/guneyin/yarbay/modules/grpc"
-	"github.com/guneyin/yarbay/modules/http"
 	"github.com/guneyin/yarbay/modules/nats"
 	"github.com/guneyin/yarbay/modules/otel"
 	"github.com/guneyin/yarbay/modules/store"
 )
 
-func (a *App) WithHttp(config http.Config) *App {
-	a.mc.RegisterModule(http.New(a.config.Title, config))
+func (a *App) WithFiber(fiber *fiber.Fiber) *App {
+	a.mc.RegisterModule(fiber)
 	return a
 }
 
@@ -20,27 +20,27 @@ func (a *App) WithDB(db *db.DB) *App {
 	return a
 }
 
-func (a *App) WithStore() *App {
-	a.mc.RegisterModule(store.New())
+func (a *App) WithStore(store *store.Store) *App {
+	a.mc.RegisterModule(store)
 	return a
 }
 
-func (a *App) WithNATS(url ...string) *App {
-	a.mc.RegisterModule(nats.New(url...))
+func (a *App) WithNATS(nats *nats.NATS) *App {
+	a.mc.RegisterModule(nats)
 	return a
 }
 
-func (a *App) WithRPC(config grpc.Config) *App {
-	a.mc.RegisterModule(grpc.New(config))
+func (a *App) WithGRPC(grpc *grpc.GRPC) *App {
+	a.mc.RegisterModule(grpc)
 	return a
 }
 
-func (a *App) WithOtel(exporterURL string) *App {
-	a.mc.RegisterModule(otel.New(a.config.Name, exporterURL))
+func (a *App) WithOtel(otel *otel.Otel) *App {
+	a.mc.RegisterModule(otel)
 	return a
 }
 
-func (a *App) WithElastic(addr string) *App {
-	a.mc.RegisterModule(elastic.New(addr))
+func (a *App) WithElastic(elastic *elastic.Elastic) *App {
+	a.mc.RegisterModule(elastic)
 	return a
 }

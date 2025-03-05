@@ -1,7 +1,6 @@
 package store
 
 import (
-	"context"
 	"errors"
 	"sync"
 )
@@ -22,7 +21,7 @@ func (s *Store) Name() string {
 	return ModuleName
 }
 
-func (s *Store) Start(_ context.Context) error {
+func (s *Store) Start() error {
 	if s == nil {
 		return nil
 	}
