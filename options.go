@@ -5,6 +5,7 @@ import (
 	"github.com/guneyin/yarbay/modules/elastic"
 	"github.com/guneyin/yarbay/modules/grpc"
 	"github.com/guneyin/yarbay/modules/http"
+	"github.com/guneyin/yarbay/modules/nats"
 	"github.com/guneyin/yarbay/modules/otel"
 	"github.com/guneyin/yarbay/modules/store"
 )
@@ -21,6 +22,11 @@ func (a *App) WithDB(db *db.DB) *App {
 
 func (a *App) WithStore() *App {
 	a.mc.RegisterModule(store.New())
+	return a
+}
+
+func (a *App) WithNATS(url ...string) *App {
+	a.mc.RegisterModule(nats.New(url...))
 	return a
 }
 

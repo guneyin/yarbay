@@ -3,6 +3,7 @@ package utils
 import (
 	"bytes"
 	"encoding/gob"
+	"encoding/json"
 	"fmt"
 	"github.com/gofiber/fiber/v2"
 	"github.com/ilyakaznacheev/cleanenv"
@@ -19,6 +20,14 @@ func LoadConfig(cfg any) error {
 	}
 
 	return nil
+}
+
+func Marshal[T any](data []byte, v *T) (*T, error) {
+	err := json.Unmarshal(data, v)
+	if err != nil {
+		return nil, err
+	}
+	return v, nil
 }
 
 func Convert[T any](from any, to T) (T, error) {
