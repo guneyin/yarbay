@@ -9,14 +9,10 @@ import (
 	"syscall"
 )
 
-type Config struct {
-	Name  string
-	Title string
-}
-
 type App struct {
-	config *Config
-	mc     *modules.Controller
+	config       *Config
+	mc           *modules.Controller
+	bootstrapped bool
 }
 
 func NewApp(config *Config) *App {
@@ -30,19 +26,35 @@ func (a *App) Start() error {
 	ctx, stop := signal.NotifyContext(context.Background(), syscall.SIGINT, syscall.SIGTERM)
 	defer stop()
 
+	okCh := make(chan bool)
 	errCh := make(chan error)
 
 	go func() {
-		errCh <- a.mc.Boostrap(ctx)
+		ok, err := a.mc.Boostrap()
+		if err != nil {
+			errCh <- err
+		}
+		okCh <- ok
 	}()
 
 	select {
 	case err := <-errCh:
 		return fmt.Errorf("error on start: %v", err)
+	case <-okCh:
+		a.bootstrapped = true
+		return nil
 	case <-ctx.Done():
-		a.mc.Shutdown()
+		a.Stop()
 		return errors.New("interrupted")
 	}
+}
+
+func (a *App) Stop() {
+	a.mc.Shutdown()
+}
+
+func (a *App) Bootstrapped() bool {
+	return a.bootstrapped
 }
 
 func (a *App) Market() modules.Market {

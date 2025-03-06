@@ -19,22 +19,22 @@ func New(config *Config) *Fiber {
 	}
 }
 
-func (h *Fiber) Name() string {
+func (f *Fiber) Name() string {
 	return ModuleName
 }
 
-func (h *Fiber) Start() error {
-	if h == nil {
+func (f *Fiber) Start() error {
+	if f == nil {
 		return nil
 	}
 
-	return h.Listen(fmt.Sprintf(":%s", h.port))
+	return f.Listen(fmt.Sprintf(":%s", f.port))
 }
 
-func (h *Fiber) Stop() error {
-	if h == nil {
+func (f *Fiber) Stop() error {
+	if f == nil {
 		return nil
 	}
 
-	return h.Shutdown()
+	return f.Shutdown()
 }

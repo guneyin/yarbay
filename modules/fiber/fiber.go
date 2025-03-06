@@ -65,3 +65,7 @@ func newFiberApp(config *Config) *fiber.App {
 
 	return app
 }
+
+func (f *Fiber) Addr() string {
+	return fmt.Sprintf(":%s", f.port)
+}

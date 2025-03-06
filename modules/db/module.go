@@ -2,14 +2,13 @@ package db
 
 import (
 	"gorm.io/gorm"
-	"gorm.io/gorm/logger"
 )
 
 const ModuleName = "db-server"
 
 type DB struct {
 	*gorm.DB
-	dialect gorm.Dialector
+	err error
 }
 
 func (d *DB) Name() string {
@@ -21,13 +20,7 @@ func (d *DB) Start() error {
 		return nil
 	}
 
-	db, err := gorm.Open(d.dialect, &gorm.Config{Logger: logger.Default.LogMode(logger.Error)})
-	if err != nil {
-		return err
-	}
-
-	d.DB = db
-	return err
+	return d.err
 }
 
 func (d *DB) Stop() error {
@@ -35,10 +28,10 @@ func (d *DB) Stop() error {
 		return nil
 	}
 
-	sdb, err := d.DB.DB()
+	db, err := d.DB.DB()
 	if err != nil {
 		return err
 	}
 
-	return sdb.Close()
+	return db.Close()
 }

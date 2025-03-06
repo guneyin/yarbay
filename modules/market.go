@@ -11,7 +11,7 @@ import (
 )
 
 type Market interface {
-	HTTP() *fiber.Fiber
+	Fiber() *fiber.Fiber
 	DB() *db.DB
 	Store() *store.Store
 	NATS() *nats.NATS
@@ -20,7 +20,7 @@ type Market interface {
 	Elastic() *elastic.Elastic
 }
 
-func (mc *Controller) HTTP() *fiber.Fiber {
+func (mc *Controller) Fiber() *fiber.Fiber {
 	return mc.GetModule(fiber.ModuleName).(*fiber.Fiber)
 }
 

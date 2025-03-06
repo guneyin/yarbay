@@ -1,7 +1,6 @@
 package modules
 
 import (
-	"context"
 	"github.com/guneyin/yarbay/logger"
 )
 
@@ -21,7 +20,7 @@ func NewController() *Controller {
 	}
 }
 
-func (mc *Controller) Boostrap(ctx context.Context) error {
+func (mc *Controller) Boostrap() (bool, error) {
 	errCh := make(chan error)
 	for _, mod := range mc.modules {
 		go func() {
@@ -34,11 +33,11 @@ func (mc *Controller) Boostrap(ctx context.Context) error {
 
 	for err := range errCh {
 		if err != nil {
-			return err
+			return false, err
 		}
 	}
 
-	return nil
+	return true, nil
 }
 
 func (mc *Controller) Shutdown() {
