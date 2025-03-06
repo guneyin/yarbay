@@ -19,6 +19,14 @@ func New(config *Config) *Fiber {
 	}
 }
 
+func NewTest(port ...string) *Fiber {
+	port = append(port, "8080")
+	return New(&Config{
+		AppName: "test-app",
+		Port:    port[0],
+	})
+}
+
 func (f *Fiber) Name() string {
 	return ModuleName
 }
