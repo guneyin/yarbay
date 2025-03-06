@@ -7,6 +7,9 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/gofiber/fiber/v2/middleware/recover"
+	"github.com/swaggo/swag"
+	"strings"
+
 	"os"
 	"time"
 )
@@ -46,6 +49,12 @@ func newFiberApp(config *Config) *fiber.App {
 			Path:        "docs",
 			Title:       fmt.Sprintf("%s API documentation", config.AppName),
 			CacheAge:    0,
+		}
+
+		if strings.TrimSpace(config.ExternalIP) != "" {
+			if swg, ok := swag.GetSwagger("swagger").(*swag.Spec); ok {
+				swg.Host = config.ExternalIP
+			}
 		}
 
 		_, err := os.Stat(swaggerConfig.FilePath)
