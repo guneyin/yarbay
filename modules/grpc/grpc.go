@@ -14,7 +14,18 @@ type ServiceRegistry struct {
 	Service any
 }
 
-func newGRPCServer(config *Config) *grpc.Server {
+func (g *GRPC) WithServiceRegistry(services ...ServiceRegistry) *GRPC {
+	for _, service := range services {
+		if t, ok := service.Service.(interface{ testEmbeddedByValue() }); ok {
+			t.testEmbeddedByValue()
+		}
+		g.Server.RegisterService(&service.Desc, service)
+	}
+
+	return g
+}
+
+func newServer(config *Config) *grpc.Server {
 	timeout := defaultTimeout
 	if config.Timeout > 0 {
 		timeout = config.Timeout
@@ -27,7 +38,7 @@ func newGRPCServer(config *Config) *grpc.Server {
 	return svc
 }
 
-func NewConnection(addr string) (*grpc.ClientConn, error) {
+func NewClient(addr string) (*grpc.ClientConn, error) {
 	conn, err := grpc.NewClient(addr,
 		grpc.WithTransportCredentials(insecure.NewCredentials()),
 		grpc.WithStatsHandler(otelgrpc.NewClientHandler()),

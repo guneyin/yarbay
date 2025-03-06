@@ -13,7 +13,7 @@ type GRPC struct {
 }
 
 func New(config *Config) *GRPC {
-	return &GRPC{Server: newGRPCServer(config), port: config.Port}
+	return &GRPC{Server: newServer(config), port: config.Port}
 }
 
 func (g *GRPC) Name() string {
