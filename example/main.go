@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"github.com/guneyin/yarbay"
 	"github.com/guneyin/yarbay/modules/db"
 	"github.com/guneyin/yarbay/modules/elastic"
@@ -28,7 +29,12 @@ func main() {
 			AppName: appName,
 			Port:    "8000",
 			Timeout: time.Second * 30,
-			Swagger: true,
+		}).WithSwagger(&fiber.SwaggerConfig{
+			HostURL:  "127.0.0.1:8000",
+			BasePath: "/",
+			FilePath: "./docs/swagger.json",
+			Path:     "/docs",
+			Title:    fmt.Sprintf("%s - API Documentation", appTitle),
 		})).
 		WithDB(db.NewMemoryDB()).
 		WithStore(store.New()).
