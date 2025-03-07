@@ -10,17 +10,18 @@ import (
 const ModuleName = "nats"
 
 type NATS struct {
-	nc        *nats.Conn
+	*nats.Conn
 	container *natsContainer.NATSContainer
 	err       error
 }
 
 func New(url string, options ...nats.Option) *NATS {
+
 	nc, err := nats.Connect(url, options...)
 	if err != nil {
 		return newErr(err)
 	}
-
+	
 	return &NATS{nc, nil, nil}
 }
 
@@ -61,7 +62,7 @@ func (n *NATS) Stop() error {
 		return nil
 	}
 
-	n.nc.Close()
+	n.Conn.Close()
 
 	timeOut := 5 * time.Second
 	if n.container != nil {

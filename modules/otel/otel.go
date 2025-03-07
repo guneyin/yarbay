@@ -6,12 +6,13 @@ import (
 	"go.opentelemetry.io/otel/exporters/otlp/otlptrace/otlptracehttp"
 	"go.opentelemetry.io/otel/propagation"
 	"go.opentelemetry.io/otel/sdk/resource"
-	"go.opentelemetry.io/otel/sdk/trace"
+	sdktrace "go.opentelemetry.io/otel/sdk/trace"
 	semconv "go.opentelemetry.io/otel/semconv/v1.17.0"
+	"go.opentelemetry.io/otel/trace"
 	"time"
 )
 
-func newTraceProvider(url, serviceName string) (*trace.TracerProvider, error) {
+func newTraceProvider(url, serviceName string) (*sdktrace.TracerProvider, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*5)
 	defer cancel()
 
@@ -20,10 +21,10 @@ func newTraceProvider(url, serviceName string) (*trace.TracerProvider, error) {
 		return nil, err
 	}
 
-	tp := trace.NewTracerProvider(
-		trace.WithBatcher(exporter),
-		trace.WithSampler(trace.AlwaysSample()),
-		trace.WithResource(resource.NewWithAttributes(
+	tp := sdktrace.NewTracerProvider(
+		sdktrace.WithBatcher(exporter),
+		sdktrace.WithSampler(sdktrace.AlwaysSample()),
+		sdktrace.WithResource(resource.NewWithAttributes(
 			semconv.SchemaURL,
 			semconv.ServiceNameKey.String(serviceName))))
 
@@ -35,4 +36,10 @@ func newTraceProvider(url, serviceName string) (*trace.TracerProvider, error) {
 		),
 	)
 	return tp, nil
+}
+
+func NewTracerWithSpan(ctx context.Context, name, spanName string) trace.Span {
+	tracer := otel.GetTracerProvider().Tracer(name)
+	_, span := tracer.Start(ctx, spanName)
+	return span
 }

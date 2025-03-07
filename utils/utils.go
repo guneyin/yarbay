@@ -2,10 +2,10 @@ package utils
 
 import (
 	"bytes"
+	"context"
 	"encoding/gob"
 	"encoding/json"
 	"fmt"
-	"github.com/gofiber/fiber/v2"
 	"github.com/ilyakaznacheev/cleanenv"
 	"go.opentelemetry.io/otel/trace"
 )
@@ -56,6 +56,6 @@ func deepCopy(src, dest any) (any, error) {
 	return dest, nil
 }
 
-func SpanFromContext(c *fiber.Ctx) trace.Span {
-	return trace.SpanFromContext(c.Context())
+func SpanFromContext(ctx context.Context) trace.Span {
+	return trace.SpanFromContext(ctx)
 }
