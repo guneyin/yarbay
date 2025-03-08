@@ -7,10 +7,9 @@ import (
 	"github.com/guneyin/yarbay/modules/elastic"
 	"github.com/guneyin/yarbay/modules/fiber"
 	"github.com/guneyin/yarbay/modules/grpc"
-	natsmodule "github.com/guneyin/yarbay/modules/nats"
+	"github.com/guneyin/yarbay/modules/nats"
 	"github.com/guneyin/yarbay/modules/otel"
 	"github.com/guneyin/yarbay/modules/store"
-	"github.com/nats-io/nats.go"
 	"log"
 	"time"
 )
@@ -44,10 +43,13 @@ func main() {
 		})).
 		WithOtel(otel.New(&otel.Config{
 			AppName:   appName,
-			ExportURL: "jaeger:5468",
+			ExportURL: "127.0.0.1:5468",
 		})).
 		WithElastic(elastic.New("http://127.0.0.1:9200")).
-		WithNATS(natsmodule.New(nats.DefaultURL))
+		WithNATS(nats.New("nats://127.0.0.1:4222"))
+
+	service := NewService()
+	app.RegisterService(service)
 
 	log.Fatal(app.Start())
 }
