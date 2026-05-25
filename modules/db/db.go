@@ -39,3 +39,8 @@ func (d *DB) WithMigrate(tables ...any) *DB {
 	d.err = d.DB.AutoMigrate(tables...)
 	return d
 }
+
+func (d *DB) WithDebug() *DB {
+	d.Debug()
+	return d
+}

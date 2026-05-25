@@ -2,6 +2,7 @@ package fiber
 
 import (
 	"fmt"
+
 	"github.com/gofiber/fiber/v2"
 )
 
@@ -9,13 +10,13 @@ const ModuleName = "http-server"
 
 type Fiber struct {
 	*fiber.App
-	port string
+	config       *Config
+	errorHandler func(*fiber.Ctx, error) error
 }
 
 func New(config *Config) *Fiber {
 	return &Fiber{
-		App:  newFiberApp(config),
-		port: config.Port,
+		config: config,
 	}
 }
 
@@ -36,7 +37,7 @@ func (f *Fiber) Start() error {
 		return nil
 	}
 
-	return f.Listen(fmt.Sprintf(":%s", f.port))
+	return f.Listen(fmt.Sprintf(":%s", f.config.Port))
 }
 
 func (f *Fiber) Stop() error {

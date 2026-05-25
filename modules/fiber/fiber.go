@@ -3,20 +3,23 @@ package fiber
 import (
 	"encoding/json"
 	"fmt"
+	"os"
+	"path"
+	"strings"
+	"time"
+
 	"github.com/MarceloPetrucio/go-scalar-api-reference"
 	"github.com/gofiber/contrib/otelfiber"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/gofiber/fiber/v2/middleware/recover"
-	"os"
-	"path"
-	"strings"
-	"time"
 )
 
 const defaultTimeout = 30 * time.Second
 
-func newFiberApp(config *Config) *fiber.App {
+func (f *Fiber) Build() {
+	config := f.config
+
 	timeout := defaultTimeout
 	if config.Timeout > 0 {
 		timeout = config.Timeout
@@ -28,7 +31,8 @@ func newFiberApp(config *Config) *fiber.App {
 		AppName:               config.AppName,
 		ReadTimeout:           timeout,
 		WriteTimeout:          timeout,
-		DisableStartupMessage: true,
+		DisableStartupMessage: config.DisableStartupMessage,
+		ErrorHandler:          f.errorHandler,
 	})
 
 	app.Use(cors.New())
@@ -40,11 +44,11 @@ func newFiberApp(config *Config) *fiber.App {
 		}),
 	))
 
-	return app
+	f.App = app
 }
 
 func (f *Fiber) Addr() string {
-	return fmt.Sprintf(":%s", f.port)
+	return fmt.Sprintf(":%s", f.config.Port)
 }
 
 func (f *Fiber) WithSwagger(config ...*SwaggerConfig) *Fiber {
@@ -75,6 +79,12 @@ func (f *Fiber) WithSwagger(config ...*SwaggerConfig) *Fiber {
 		c.Set(fiber.HeaderContentType, fiber.MIMETextHTML)
 		return c.SendString(htmlContent)
 	})
+
+	return f
+}
+
+func (f *Fiber) WithErrorHandler(errHandler func(*fiber.Ctx, error) error) *Fiber {
+	f.errorHandler = errHandler
 
 	return f
 }

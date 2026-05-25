@@ -13,6 +13,6 @@ func NewService() *Service {
 	return &Service{}
 }
 
-func (s *Service) Boostrap(m modules.Market) {
+func (s *Service) Bootstrap(m modules.Market) {
 	s.db = m.DB()
 }

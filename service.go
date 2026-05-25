@@ -5,9 +5,9 @@ import (
 )
 
 type Service interface {
-	Boostrap(m modules.Market)
+	Bootstrap(m modules.Market)
 }
 
 func (a *App) RegisterService(s Service) {
-	s.Boostrap(a.Market())
+	s.Bootstrap(a.Market())
 }

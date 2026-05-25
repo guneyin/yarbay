@@ -11,6 +11,7 @@ import (
 )
 
 func (a *App) WithFiber(fiber *fiber.Fiber) *App {
+	fiber.Build()
 	a.mc.RegisterModule(fiber)
 	return a
 }

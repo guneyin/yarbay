@@ -5,9 +5,10 @@ import (
 )
 
 type Config struct {
-	AppName string        `json:"appName"`
-	Port    string        `json:"port"`
-	Timeout time.Duration `json:"timeout"`
+	AppName               string        `json:"appName"`
+	Port                  string        `json:"port"`
+	Timeout               time.Duration `json:"timeout"`
+	DisableStartupMessage bool          `json:"disableStartupMessage"`
 }
 
 type SwaggerConfig struct {
